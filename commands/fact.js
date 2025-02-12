@@ -4,6 +4,19 @@ const fs = require('fs');
 
 const token = fs.readFileSync('token.txt', 'utf8').trim();
 
+// Liste des cryptos les plus populaires et leur ID CoinGecko
+const cryptoIDs = {
+  btc: 'bitcoin',
+  eth: 'ethereum',
+  doge: 'dogecoin',
+  bnb: 'binancecoin',
+  xrp: 'ripple',
+  ada: 'cardano',
+  sol: 'solana',
+  dot: 'polkadot',
+  matic: 'matic-network'
+};
+
 module.exports = {
   name: 'crypto',
   description: 'Obtenez le prix actuel d’une crypto.',
@@ -14,26 +27,14 @@ module.exports = {
     }
 
     const symbol = args[0].toLowerCase();
+    const coinID = cryptoIDs[symbol];
+
+    if (!coinID) {
+      return sendMessage(senderId, { text: '❌ Crypto non supportée. Essaye avec btc, eth, doge...' }, token);
+    }
 
     try {
-      // Étape 1 : Récupérer la liste complète des cryptos
-      const { data: coins } = await axios.get('https://api.coingecko.com/api/v3/coins/list');
+      const { data } = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coinID}&vs_currencies=usd`);
+      const price = data[coinID].usd;
 
-      // Étape 2 : Trouver l'ID correspondant au symbole
-      const coin = coins.find(c => c.symbol === symbol);
-
-      if (!coin) {
-        return sendMessage(senderId, { text: '❌ Crypto introuvable. Essaye avec un autre symbole !' }, token);
-      }
-
-      // Étape 3 : Récupérer le prix
-      const { data: priceData } = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coin.id}&vs_currencies=usd`);
-
-      await sendMessage(senderId, { text: `💰 **${coin.name} (${symbol.toUpperCase()})** : $${priceData[coin.id].usd}` }, token);
-
-    } catch (error) {
-      console.error(error);
-      await sendMessage(senderId, { text: '❌ Erreur API CoinGecko.' }, token);
-    }
-  }
-};
+      await

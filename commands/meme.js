@@ -10,9 +10,7 @@ module.exports = {
   async execute(senderId) {
     try {
       const { data } = await axios.get('https://meme-api.com/gimme');
-      const memeUrl = data.url || '';
-
-      await sendMessage(senderId, { text: `🤣 **Mème du jour :**\n${memeUrl}` }, token);
+      await sendMessage(senderId, { text: `🤣 **Mème du jour :**\n${data.url}` }, token);
     } catch (error) {
       console.error(error);
       await sendMessage(senderId, { text: '❌ Impossible de récupérer un mème.' }, token);

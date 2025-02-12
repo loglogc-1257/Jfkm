@@ -9,7 +9,7 @@ module.exports = {
   description: 'Obtenez un fait intéressant.',
   async execute(senderId) {
     try {
-      const { data } = await axios.get('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en');
+      const { data } = await axios.get('https://uselessfacts.jsph.pl/api/v2/facts/random?language=fr');
       await sendMessage(senderId, { text: `📢 **Fait du jour** : ${data.text}` }, token);
     } catch (error) {
       console.error(error);
